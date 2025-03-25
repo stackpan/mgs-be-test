@@ -1,6 +1,7 @@
 package io.github.stackpan.mgs_be_test.service.impl;
 
 import io.github.stackpan.mgs_be_test.service.StorageService;
+import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -21,6 +22,12 @@ public class LocalStorageService implements StorageService {
 
     private final Pattern DATA_URI_BASE64_PATTERN = Pattern.compile("data:(.+);base64,(.+)");
 
+    @PostConstruct
+    public void init() {
+        var uploadDir = new File(UPLOAD_DIR);
+        if (!uploadDir.exists()) uploadDir.mkdirs();
+    }
+
     public String store(String dataURIEncoded) {
         try {
             var matched = DATA_URI_BASE64_PATTERN.matcher(dataURIEncoded);
@@ -31,9 +38,6 @@ public class LocalStorageService implements StorageService {
             var base64Data = matched.group(2);
 
             var fileBytes = Base64.getDecoder().decode(base64Data);
-
-            var uploadDir = new File(UPLOAD_DIR);
-            if (!uploadDir.exists()) uploadDir.mkdirs();
 
             var filename = UUID.randomUUID() + getExtension(mimeType);
             var fullPath = Path.of(UPLOAD_DIR, filename);
