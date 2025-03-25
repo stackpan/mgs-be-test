@@ -1,7 +1,6 @@
 package io.github.stackpan.mgs_be_test.service.impl;
 
 import io.github.stackpan.mgs_be_test.service.StorageService;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -18,7 +17,6 @@ import io.github.stackpan.mgs_be_test.security.AuthToken;
 import io.github.stackpan.mgs_be_test.service.UserService;
 import lombok.RequiredArgsConstructor;
 
-@Slf4j
 @Service
 @RequiredArgsConstructor
 public class UserServiceImpl implements UserService, UserDetailsService {
@@ -46,16 +44,17 @@ public class UserServiceImpl implements UserService, UserDetailsService {
     @Override
     @Transactional
     public User create(CreateUserDto data) {
-        log.info("profilePicture: {}", data.profilePicture());
-
         var user = new User();
         user.setUsername(data.username());
         user.setEmail(data.email());
         user.setFirstName(data.firstName());
-        user.setLastName(data.lastName());
+        user.setLastName(data.lastName().orElse(null));
         user.setPassword(passwordEncoder.encode(data.password()));
         user.setRole(data.role());
-        user.setProfilePicture(storageService.store(data.profilePicture()));
+
+        if (data.profilePicture().isPresent()) {
+            user.setProfilePicture(storageService.store(data.profilePicture().get()));
+        }
 
         return userRepository.save(user);
     }

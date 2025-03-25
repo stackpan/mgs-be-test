@@ -3,6 +3,7 @@ package io.github.stackpan.mgs_be_test.controller;
 import java.util.Map;
 
 import io.github.stackpan.mgs_be_test.model.request.LoginRequest;
+import jakarta.validation.Valid;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -27,15 +28,15 @@ public class AuthController {
     private final UserService userService;
 
     @PostMapping("/register")
-    public UserDto register(@RequestBody AuthRegisterRequest request) {
+    public UserDto register(@RequestBody @Valid AuthRegisterRequest request) {
         var dto = new CreateUserDto(
-                request.username(),
-                request.password(),
-                request.email(),
-                request.firstName(),
-                request.lastName(),
-                request.profilePicture(),
-                request.role()
+                request.getUsername(),
+                request.getPassword(),
+                request.getEmail(),
+                request.getFirstName(),
+                request.getLastName(),
+                request.getProfilePicture(),
+                request.getRole()
         );
 
         var user = userService.create(dto);
@@ -44,8 +45,8 @@ public class AuthController {
     }
 
     @PostMapping("/login")
-    public Map<String, Object> login(@RequestBody LoginRequest request) {
-        var dto = new LoginDto(request.username(), request.password());
+    public Map<String, Object> login(@RequestBody @Valid LoginRequest request) {
+        var dto = new LoginDto(request.getUsername(), request.getPassword());
 
         var token = authService.login(dto);
 
