@@ -1,22 +1,41 @@
 package io.github.stackpan.mgs_be_test.controller;
 
+import io.github.stackpan.mgs_be_test.exception.InvalidFileTypeException;
+import io.github.stackpan.mgs_be_test.exception.InvalidStorageUploadException;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
+import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 
 @RestControllerAdvice
 public class ErrorController extends ResponseEntityExceptionHandler {
 
-    private record BaseErrorResponse(String message, Object errors) {
+    private record BaseErrorResponse(String title, Object details) {
+    }
+
+    @ExceptionHandler(InvalidStorageUploadException.class)
+    public ResponseEntity<BaseErrorResponse> handleStorageUploadException(InvalidStorageUploadException ex) {
+        BaseErrorResponse response;
+
+        var title = "Invalid payload.";
+
+        if (ex instanceof InvalidFileTypeException) {
+            response = new BaseErrorResponse(title, Map.of(
+                    ex.getFieldNameContext(),
+                    "must be allowed file type: " + String.join(", ", ((InvalidFileTypeException) ex).getAllowedExtensions()))
+            );
+        } else {
+            response = new BaseErrorResponse(title, Map.of(ex.getFieldNameContext(), ex.getMessage()));
+        }
+
+        return ResponseEntity.badRequest().body(response);
     }
 
     @Override

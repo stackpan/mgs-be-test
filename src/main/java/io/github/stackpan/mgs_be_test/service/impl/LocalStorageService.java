@@ -37,7 +37,7 @@ public class LocalStorageService implements StorageService {
     }
 
     @Override
-    public String store(String dataURIEncoded, int maxSize, String... allowedExtensions) {
+    public String store(String dataURIEncoded, String fieldNameContext, int maxSize, String... allowedExtensions) {
         var matched = DATA_URI_BASE64_PATTERN.matcher(dataURIEncoded);
 
         matched.find();
@@ -47,7 +47,7 @@ public class LocalStorageService implements StorageService {
         var base64Data = matched.group(2);
 
         if (allowedExtensions.length > 0 && !Set.of(allowedExtensions).contains(fileExtension)) {
-            throw new InvalidFileTypeException(allowedExtensions);
+            throw new InvalidFileTypeException(fieldNameContext, allowedExtensions);
         }
 
         var fileBytes = Base64.getDecoder().decode(base64Data);

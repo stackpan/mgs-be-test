@@ -55,7 +55,7 @@ public class UserServiceImpl implements UserService, UserDetailsService {
         user.setRole(data.role());
 
         if (data.profilePicture().isPresent()) {
-            user.setProfilePicture(storageService.store(data.profilePicture().get(), 1024, "jpg", "png", "jpeg"));
+            user.setProfilePicture(storageService.store(data.profilePicture().get(), "profilePicture", 1024000, "jpg", "png", "jpeg"));
         }
 
         return userRepository.save(user);

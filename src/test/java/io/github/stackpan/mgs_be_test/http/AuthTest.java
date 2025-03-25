@@ -15,11 +15,13 @@ import com.jayway.jsonpath.JsonPath;
 import io.github.stackpan.mgs_be_test.utils.FileUtils;
 
 import static org.hamcrest.Matchers.*;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.authentication;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.jwt;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
+import java.nio.file.Files;
 import java.nio.file.Paths;
 
 import jakarta.transaction.Transactional;
@@ -48,7 +50,7 @@ public class AuthTest {
                         "firstName": "Ivan",
                         "lastName": "Rizkyanto",
                         "profilePicture": "%s",
-                        "role": "CUSTOMER"
+                        "role": "USER"
                     }
                     """.formatted(FileUtils.dataURIEncode(imagePath));
 
@@ -66,7 +68,18 @@ public class AuthTest {
                             jsonPath("$.lastName").value(JsonPath.<String>read(payload, "$.lastName")),
                             jsonPath("$.profilePicture").isString(),
                             jsonPath("$.role").value(JsonPath.<String>read(payload, "$.role"))
-                    );
+                    )
+                    .andDo(result -> {
+                        var responsePayload = result.getResponse().getContentAsString();
+
+                        var profilePicture = JsonPath.<String>read(responsePayload, "$.profilePicture");
+
+                        var path = Paths.get("uploads/" + profilePicture);
+
+                        assertTrue(Files.exists(path));
+
+                        Files.deleteIfExists(path);
+                    });
         }
 
     }

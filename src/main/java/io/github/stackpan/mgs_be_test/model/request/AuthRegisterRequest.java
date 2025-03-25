@@ -42,5 +42,6 @@ public class AuthRegisterRequest {
             > profilePicture;
 
     @NotNull
+    @Pattern(regexp = "^(ADMIN|USER)$", message = "must be allowed values: 'ADMIN', 'USER'")
     String role;
 }
