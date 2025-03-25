@@ -1,4 +1,9 @@
-package io.github.stackpan.mgs_be_test.storage;
+package io.github.stackpan.mgs_be_test.service.impl;
+
+import io.github.stackpan.mgs_be_test.service.StorageService;
+import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Service;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -7,14 +12,9 @@ import java.util.Base64;
 import java.util.UUID;
 import java.util.regex.Pattern;
 
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Component;
-
-import lombok.RequiredArgsConstructor;
-
-@Component
+@Service
 @RequiredArgsConstructor
-public class LocalStorage {
+public class LocalStorageService implements StorageService {
 
     @Value("${storage.upload_dir:uploads}")
     private String UPLOAD_DIR;
@@ -54,5 +54,4 @@ public class LocalStorage {
         String[] parts = mimeType.split("/");
         return parts.length == 2 ? "." + parts[1] : "";
     }
-
 }

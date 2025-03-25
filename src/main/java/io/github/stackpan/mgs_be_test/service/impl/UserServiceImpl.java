@@ -1,5 +1,6 @@
 package io.github.stackpan.mgs_be_test.service.impl;
 
+import io.github.stackpan.mgs_be_test.service.StorageService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -15,7 +16,6 @@ import io.github.stackpan.mgs_be_test.model.dto.CreateUserDto;
 import io.github.stackpan.mgs_be_test.repository.UserRepository;
 import io.github.stackpan.mgs_be_test.security.AuthToken;
 import io.github.stackpan.mgs_be_test.service.UserService;
-import io.github.stackpan.mgs_be_test.storage.LocalStorage;
 import lombok.RequiredArgsConstructor;
 
 @Slf4j
@@ -29,7 +29,7 @@ public class UserServiceImpl implements UserService, UserDetailsService {
 
     private final PasswordEncoder passwordEncoder;
 
-    private final LocalStorage localStorage;
+    private final StorageService storageService;
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
@@ -55,7 +55,7 @@ public class UserServiceImpl implements UserService, UserDetailsService {
         user.setLastName(data.lastName());
         user.setPassword(passwordEncoder.encode(data.password()));
         user.setRole(data.role());
-        user.setProfilePicture(localStorage.store(data.profilePicture()));
+        user.setProfilePicture(storageService.store(data.profilePicture()));
 
         return userRepository.save(user);
     }

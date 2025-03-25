@@ -3,6 +3,7 @@ package io.github.stackpan.mgs_be_test.storage;
 import java.io.IOException;
 import java.nio.file.Paths;
 
+import io.github.stackpan.mgs_be_test.service.StorageService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -13,7 +14,7 @@ import io.github.stackpan.mgs_be_test.utils.FileUtils;
 public class LocalStorageTest {
 
     @Autowired
-    private LocalStorage localStorage;
+    private StorageService storageService;
     
     @Test
     void storeFromDataURIBase64() throws IOException {
@@ -21,7 +22,7 @@ public class LocalStorageTest {
 
         var dataURIEncoded = FileUtils.dataURIEncode(imagePath);
 
-        localStorage.store(dataURIEncoded);
+        storageService.store(dataURIEncoded);
     }
 
 }
