@@ -1,5 +1,6 @@
 package io.github.stackpan.mgs_be_test.service.impl;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -13,10 +14,11 @@ import io.github.stackpan.mgs_be_test.entity.User;
 import io.github.stackpan.mgs_be_test.model.dto.CreateUserDto;
 import io.github.stackpan.mgs_be_test.repository.UserRepository;
 import io.github.stackpan.mgs_be_test.security.AuthToken;
-import io.github.stackpan.mgs_be_test.service.StorageService;
 import io.github.stackpan.mgs_be_test.service.UserService;
+import io.github.stackpan.mgs_be_test.storage.LocalStorage;
 import lombok.RequiredArgsConstructor;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class UserServiceImpl implements UserService, UserDetailsService {
@@ -27,7 +29,7 @@ public class UserServiceImpl implements UserService, UserDetailsService {
 
     private final PasswordEncoder passwordEncoder;
 
-    private final StorageService storageService;
+    private final LocalStorage localStorage;
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
@@ -44,6 +46,8 @@ public class UserServiceImpl implements UserService, UserDetailsService {
     @Override
     @Transactional
     public User create(CreateUserDto data) {
+        log.info("profilePicture: {}", data.profilePicture());
+
         var user = new User();
         user.setUsername(data.username());
         user.setEmail(data.email());
@@ -51,7 +55,7 @@ public class UserServiceImpl implements UserService, UserDetailsService {
         user.setLastName(data.lastName());
         user.setPassword(passwordEncoder.encode(data.password()));
         user.setRole(data.role());
-        user.setProfilePicture(storageService.store(data.photoProfile()));
+        user.setProfilePicture(localStorage.store(data.profilePicture()));
 
         return userRepository.save(user);
     }

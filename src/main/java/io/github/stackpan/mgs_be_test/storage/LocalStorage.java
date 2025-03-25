@@ -1,4 +1,4 @@
-package io.github.stackpan.mgs_be_test.service.impl;
+package io.github.stackpan.mgs_be_test.storage;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -8,41 +8,42 @@ import java.util.UUID;
 import java.util.regex.Pattern;
 
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Service;
+import org.springframework.stereotype.Component;
 
-import io.github.stackpan.mgs_be_test.service.StorageService;
 import lombok.RequiredArgsConstructor;
 
-@Service
+@Component
 @RequiredArgsConstructor
-public class StorageServiceImpl implements StorageService {
+public class LocalStorage {
 
-    // @Value("${storage.upload_dir}")
-    private String UPLOAD_DIR = "uploads";
+    @Value("${storage.upload_dir:uploads}")
+    private String UPLOAD_DIR;
 
-    private final Pattern DATA_URI_BASE64_PATTERN = Pattern.compile("^data:(.+);base64,(.+)$");
+    private final Pattern DATA_URI_BASE64_PATTERN = Pattern.compile("data:(.+);base64,(.+)");
 
-    @Override
     public String store(String dataURIEncoded) {
         try {
-            var matcher = DATA_URI_BASE64_PATTERN.matcher(dataURIEncoded);
+            var matched = DATA_URI_BASE64_PATTERN.matcher(dataURIEncoded);
 
-            var mimeType = matcher.group(1);
-            var base64Data = matcher.group(2);
+            matched.find();
+
+            var mimeType = matched.group(1);
+            var base64Data = matched.group(2);
 
             var fileBytes = Base64.getDecoder().decode(base64Data);
 
             var uploadDir = new File(UPLOAD_DIR);
             if (!uploadDir.exists()) uploadDir.mkdirs();
 
-            var filename = Path.of(UPLOAD_DIR, UUID.randomUUID().toString(), getExtension(mimeType));
+            var filename = UUID.randomUUID() + getExtension(mimeType);
+            var fullPath = Path.of(UPLOAD_DIR, filename);
 
-            var file = new File(filename.toString());
+            var file = new File(fullPath.toString());
             try (var fileOutputStream = new FileOutputStream(file)) {
                 fileOutputStream.write(fileBytes);
             }
 
-            return filename.toString();
+            return filename;
         } catch (Exception e) {
             e.printStackTrace();
             return null;
@@ -53,5 +54,5 @@ public class StorageServiceImpl implements StorageService {
         String[] parts = mimeType.split("/");
         return parts.length == 2 ? "." + parts[1] : "";
     }
-    
+
 }

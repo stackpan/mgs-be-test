@@ -6,7 +6,7 @@ public record AuthRegisterRequest(
     String email,
     String firstName,
     String lastName,
-    String role,
-    String photoProfile
+    String profilePicture,
+    String role
 ) {
 }

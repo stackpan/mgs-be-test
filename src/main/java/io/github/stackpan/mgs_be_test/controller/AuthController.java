@@ -33,9 +33,9 @@ public class AuthController {
                 request.email(),
                 request.firstName(),
                 request.lastName(),
-                request.photoProfile(), 
+                request.profilePicture(),
                 request.role()
-            );
+        );
 
         var user = userService.create(dto);
 
@@ -45,7 +45,7 @@ public class AuthController {
     @PostMapping("/login")
     public Map<String, Object> login(@RequestBody LoginDto request) {
         var token = authService.login(request);
-        
+
         return Map.of("token", token);
     }
 

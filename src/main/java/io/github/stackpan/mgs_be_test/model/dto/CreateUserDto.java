@@ -6,7 +6,7 @@ public record CreateUserDto(
     String email,
     String firstName,
     String lastName,
-    String photoProfile,
+    String profilePicture,
     String role
 ) {
 }

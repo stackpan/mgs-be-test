@@ -12,11 +12,15 @@ import org.springframework.test.web.servlet.MockMvc;
 
 import com.jayway.jsonpath.JsonPath;
 
+import io.github.stackpan.mgs_be_test.utils.FileUtils;
+
 import static org.hamcrest.Matchers.*;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.authentication;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.jwt;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+
+import java.nio.file.Paths;
 
 import jakarta.transaction.Transactional;
 
@@ -28,6 +32,44 @@ public class AuthTest {
 
     @Autowired
     private MockMvc mockMvc;
+
+    @Nested
+    class Register {
+
+        @Test
+        void withValidPayloadShouldReturnsUser() throws Exception {
+            var imagePath = Paths.get("src/test/resources/photo.jpg");
+
+            var payload = """
+                    {
+                        "username": "ivan",
+                        "password": "Ivan123!",
+                        "email": "ivan@example.com",
+                        "firstName": "Ivan",
+                        "lastName": "Rizkyanto",
+                        "profilePicture": "%s",
+                        "role": "CUSTOMER"
+                    }
+                    """.formatted(FileUtils.dataURIEncode(imagePath));
+
+            mockMvc.perform(post("/auth/register")
+                        .content(payload)
+                        .contentType(MediaType.APPLICATION_JSON_VALUE)
+                    )
+                    .andExpect(status().isOk())
+                    .andExpect(header().string(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE))
+                    .andExpectAll(
+                            jsonPath("$.id").isString(),
+                            jsonPath("$.username").value(JsonPath.<String>read(payload, "$.username")),
+                            jsonPath("$.email").value(JsonPath.<String>read(payload, "$.email")),
+                            jsonPath("$.firstName").value(JsonPath.<String>read(payload, "$.firstName")),
+                            jsonPath("$.lastName").value(JsonPath.<String>read(payload, "$.lastName")),
+                            jsonPath("$.profilePicture").isString(),
+                            jsonPath("$.role").value(JsonPath.<String>read(payload, "$.role"))
+                    );
+        }
+
+    }
 
     @Nested
     class Login {
