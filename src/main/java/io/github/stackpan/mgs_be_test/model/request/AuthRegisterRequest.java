@@ -18,7 +18,7 @@ public class AuthRegisterRequest {
     @Size(max = 50)
     @Pattern(
             regexp = "^(?=.*\\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[a-zA-Z]).{8,}$",
-            message = "{validation.constraints.Pattern.ValidPassword.message}"
+            message = "must be at least 8 characters, 1 uppercase letter, 1 lowercase letter, 1 number, and contains special characters"
     )
     String password;
 
@@ -34,7 +34,12 @@ public class AuthRegisterRequest {
     Optional<@Size(max = 100) String> lastName;
 
     @NotNull
-    Optional<String> profilePicture;
+    Optional<
+            @Pattern(
+                    regexp = "^data:([a-zA-Z0-9+/.-]+/[a-zA-Z0-9+/.-]+);base64,(.+)$",
+                    message = "must be a valid base64 Data URI format"
+            ) String
+            > profilePicture;
 
     @NotNull
     String role;

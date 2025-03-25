@@ -1,5 +1,6 @@
 package io.github.stackpan.mgs_be_test.controller;
 
+import java.io.FileNotFoundException;
 import java.util.Map;
 
 import io.github.stackpan.mgs_be_test.model.request.LoginRequest;
@@ -28,7 +29,7 @@ public class AuthController {
     private final UserService userService;
 
     @PostMapping("/register")
-    public UserDto register(@RequestBody @Valid AuthRegisterRequest request) {
+    public UserDto register(@RequestBody @Valid AuthRegisterRequest request) throws FileNotFoundException {
         var dto = new CreateUserDto(
                 request.getUsername(),
                 request.getPassword(),

@@ -17,6 +17,8 @@ import io.github.stackpan.mgs_be_test.security.AuthToken;
 import io.github.stackpan.mgs_be_test.service.UserService;
 import lombok.RequiredArgsConstructor;
 
+import java.io.FileNotFoundException;
+
 @Service
 @RequiredArgsConstructor
 public class UserServiceImpl implements UserService, UserDetailsService {
@@ -43,7 +45,7 @@ public class UserServiceImpl implements UserService, UserDetailsService {
 
     @Override
     @Transactional
-    public User create(CreateUserDto data) {
+    public User create(CreateUserDto data) throws FileNotFoundException {
         var user = new User();
         user.setUsername(data.username());
         user.setEmail(data.email());
@@ -53,7 +55,7 @@ public class UserServiceImpl implements UserService, UserDetailsService {
         user.setRole(data.role());
 
         if (data.profilePicture().isPresent()) {
-            user.setProfilePicture(storageService.store(data.profilePicture().get()));
+            user.setProfilePicture(storageService.store(data.profilePicture().get(), 1024, "jpg", "png", "jpeg"));
         }
 
         return userRepository.save(user);
