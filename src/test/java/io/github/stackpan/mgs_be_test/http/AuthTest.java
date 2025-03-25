@@ -55,8 +55,8 @@ public class AuthTest {
                     """.formatted(FileUtils.dataURIEncode(imagePath));
 
             mockMvc.perform(post("/auth/register")
-                        .content(payload)
-                        .contentType(MediaType.APPLICATION_JSON_VALUE)
+                            .content(payload)
+                            .contentType(MediaType.APPLICATION_JSON_VALUE)
                     )
                     .andExpect(status().isOk())
                     .andExpect(header().string(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE))
@@ -97,13 +97,13 @@ public class AuthTest {
                     """;
 
             mockMvc.perform(post("/auth/login")
-                        .content(payload)
-                        .contentType(MediaType.APPLICATION_JSON_VALUE)
+                            .content(payload)
+                            .contentType(MediaType.APPLICATION_JSON_VALUE)
                     )
                     .andExpect(status().isOk())
                     .andExpect(header().string(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE))
                     .andExpectAll(
-                        jsonPath("$.token").isString()  
+                            jsonPath("$.token").isString()
                     );
         }
 
@@ -142,6 +142,67 @@ public class AuthTest {
                             jsonPath("$.firstName").value("Admin"),
                             jsonPath("$.lastName").isEmpty(),
                             jsonPath("$.role").value("ADMIN")
+                    );
+        }
+    }
+
+    @Nested
+    class UpdateMe {
+
+        @Test
+        void withValidPayloadShouldReturnsUpdatedUser() throws Exception {
+            var payload = """
+                    {
+                        "username": "ivan",
+                        "email": "ivan@example.com",
+                        "firstName": "Ivan",
+                        "lastName": "Rizkyanto"
+                    }
+                    """;
+
+            var jwtMocks = jwt().jwt(jwt -> jwt
+                    .claim("sub", "84d591ca-c0e3-4716-8d5f-18d1c113cb51")
+                    .claim("scope", "ROLE_USER")
+            );
+
+            mockMvc.perform(put("/auth/me")
+                            .with(jwtMocks)
+                            .contentType(MediaType.APPLICATION_JSON_VALUE)
+                            .content(payload)
+                    )
+                    .andExpect(status().isOk())
+                    .andExpectAll(
+                            jsonPath("$.username").value(JsonPath.<String>read(payload, "$.username")),
+                            jsonPath("$.email").value(JsonPath.<String>read(payload, "$.email")),
+                            jsonPath("$.firstName").value(JsonPath.<String>read(payload, "$.firstName")),
+                            jsonPath("$.lastName").value(JsonPath.<String>read(payload, "$.lastName"))
+                    );
+        }
+
+        @Test
+        void withInvalidPayloadShouldReturnsUpdatedUser() throws Exception {
+            var payload = """
+                    {
+                        "username": "admin",
+                        "email": "ivan@example.com",
+                        "firstName": "Ivan",
+                        "lastName": "Rizkyanto"
+                    }
+                    """;
+
+            var jwtMocks = jwt().jwt(jwt -> jwt
+                    .claim("sub", "84d591ca-c0e3-4716-8d5f-18d1c113cb51")
+                    .claim("scope", "ROLE_USER")
+            );
+
+            mockMvc.perform(put("/auth/me")
+                            .with(jwtMocks)
+                            .contentType(MediaType.APPLICATION_JSON_VALUE)
+                            .content(payload)
+                    )
+                    .andExpect(status().isBadRequest())
+                    .andExpectAll(
+                            jsonPath("$.details.username").isArray()
                     );
         }
     }

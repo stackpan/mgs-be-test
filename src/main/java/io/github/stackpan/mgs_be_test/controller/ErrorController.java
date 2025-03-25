@@ -1,5 +1,6 @@
 package io.github.stackpan.mgs_be_test.controller;
 
+import io.github.stackpan.mgs_be_test.exception.InvalidDtoException;
 import io.github.stackpan.mgs_be_test.exception.InvalidFileTypeException;
 import io.github.stackpan.mgs_be_test.exception.InvalidStorageUploadException;
 import org.springframework.http.HttpHeaders;
@@ -20,8 +21,15 @@ public class ErrorController extends ResponseEntityExceptionHandler {
     private record BaseErrorResponse(String title, Object details) {
     }
 
+    @ExceptionHandler(InvalidDtoException.class)
+    public ResponseEntity<Object> handleDtoFieldException(InvalidDtoException ex, WebRequest request) {
+        var response = new BaseErrorResponse(ex.getMessage(), ex.getDetails());
+
+        return ResponseEntity.badRequest().body(response);
+    }
+
     @ExceptionHandler(InvalidStorageUploadException.class)
-    public ResponseEntity<BaseErrorResponse> handleStorageUploadException(InvalidStorageUploadException ex) {
+    public ResponseEntity<Object> handleStorageUploadException(InvalidStorageUploadException ex) {
         BaseErrorResponse response;
 
         var title = "Invalid payload.";

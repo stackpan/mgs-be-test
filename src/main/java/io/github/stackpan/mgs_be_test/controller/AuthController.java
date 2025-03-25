@@ -3,13 +3,10 @@ package io.github.stackpan.mgs_be_test.controller;
 import java.io.FileNotFoundException;
 import java.util.Map;
 
+import io.github.stackpan.mgs_be_test.model.request.AuthUpdateMeRequest;
 import io.github.stackpan.mgs_be_test.model.request.LoginRequest;
 import jakarta.validation.Valid;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import io.github.stackpan.mgs_be_test.model.dto.CreateUserDto;
 import io.github.stackpan.mgs_be_test.model.dto.LoginDto;
@@ -59,4 +56,17 @@ public class AuthController {
         return UserDto.fromEntity(userService.getMe());
     }
 
+    @PutMapping("/me")
+    public UserDto updateMe(@RequestBody @Valid AuthUpdateMeRequest request) {
+        var dto = UserDto.builder()
+                .username(request.getUsername())
+                .email(request.getEmail())
+                .firstName(request.getFirstName())
+                .lastName(request.getLastName())
+                .build();
+
+        var user = authService.updateMe(dto);
+
+        return UserDto.fromEntity(user);
+    }
 }
