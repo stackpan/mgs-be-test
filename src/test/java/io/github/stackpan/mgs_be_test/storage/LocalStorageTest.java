@@ -26,7 +26,7 @@ public class LocalStorageTest {
 
         var dataURIEncoded = FileUtils.dataURIEncode(imagePath);
 
-        var storedFilename = storageService.store(dataURIEncoded, 128000, "png", "jpg", "jpeg");
+        var storedFilename = storageService.store(dataURIEncoded, null, 128000, "png", "jpg", "jpeg");
 
         var path = Paths.get("uploads/" + storedFilename);
 
@@ -41,7 +41,7 @@ public class LocalStorageTest {
 
         var dataURIEncoded = FileUtils.dataURIEncode(imagePath);
 
-        assertThrows(MaxUploadSizeExceededException.class, () -> storageService.store(dataURIEncoded, 128000, "jpg", "jpeg"));
+        assertThrows(MaxUploadSizeExceededException.class, () -> storageService.store(dataURIEncoded, null, 128000, "jpg", "jpeg"));
     }
 
 }
