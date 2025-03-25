@@ -1,4 +1,4 @@
-package io.github.stackpan.mgs_be_test.dto;
+package io.github.stackpan.mgs_be_test.model.dto;
 
 import java.util.UUID;
 
