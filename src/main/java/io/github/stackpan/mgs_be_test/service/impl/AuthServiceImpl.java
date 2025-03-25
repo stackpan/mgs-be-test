@@ -31,7 +31,7 @@ public class AuthServiceImpl implements AuthService {
 
     @Override
     public String login(LoginDto data) {
-        var authenticationToken = new UsernamePasswordAuthenticationToken(data.username(), data.password());
+        var authenticationToken = new UsernamePasswordAuthenticationToken(data.getUsername(), data.getPassword());
         var authenticated = authenticationManager.authenticate(authenticationToken);
 
         return jwtTokenizer.generate(authenticated);

@@ -1,7 +1,12 @@
 package io.github.stackpan.mgs_be_test.model.dto;
 
-public record LoginDto(
-    String username,
-    String password
-) {
+import lombok.Builder;
+import lombok.Data;
+
+@Data
+@Builder
+public class LoginDto {
+    private String username;
+    private String password;
 }
+

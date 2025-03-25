@@ -47,15 +47,15 @@ public class UserServiceImpl implements UserService, UserDetailsService {
     @Transactional
     public User create(CreateUserDto data) throws FileNotFoundException {
         var user = new User();
-        user.setUsername(data.username());
-        user.setEmail(data.email());
-        user.setFirstName(data.firstName());
-        user.setLastName(data.lastName().orElse(null));
-        user.setPassword(passwordEncoder.encode(data.password()));
-        user.setRole(data.role());
+        user.setUsername(data.getUsername());
+        user.setEmail(data.getEmail());
+        user.setFirstName(data.getFirstName());
+        user.setLastName(data.getLastName().orElse(null));
+        user.setPassword(passwordEncoder.encode(data.getPassword()));
+        user.setRole(data.getRole());
 
-        if (data.profilePicture().isPresent()) {
-            user.setProfilePicture(storageService.store(data.profilePicture().get(), "profilePicture", 1024000, "jpg", "png", "jpeg"));
+        if (data.getProfilePicture().isPresent()) {
+            user.setProfilePicture(storageService.store(data.getProfilePicture().get(), "profilePicture", 1024000, "jpg", "png", "jpeg"));
         }
 
         return userRepository.save(user);

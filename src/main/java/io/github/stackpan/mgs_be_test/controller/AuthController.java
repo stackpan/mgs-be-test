@@ -27,15 +27,15 @@ public class AuthController {
 
     @PostMapping("/register")
     public UserDto register(@RequestBody @Valid AuthRegisterRequest request) throws FileNotFoundException {
-        var dto = new CreateUserDto(
-                request.getUsername(),
-                request.getPassword(),
-                request.getEmail(),
-                request.getFirstName(),
-                request.getLastName(),
-                request.getProfilePicture(),
-                request.getRole()
-        );
+        var dto = CreateUserDto.builder()
+                .username(request.getUsername())
+                .password(request.getPassword())
+                .email(request.getEmail())
+                .firstName(request.getFirstName())
+                .lastName(request.getLastName())
+                .profilePicture(request.getProfilePicture())
+                .role(request.getRole())
+                .build();
 
         var user = userService.create(dto);
 
@@ -44,7 +44,10 @@ public class AuthController {
 
     @PostMapping("/login")
     public Map<String, Object> login(@RequestBody @Valid LoginRequest request) {
-        var dto = new LoginDto(request.getUsername(), request.getPassword());
+        var dto = LoginDto.builder()
+                .username(request.getUsername())
+                .password(request.getPassword())
+                .build();
 
         var token = authService.login(dto);
 
