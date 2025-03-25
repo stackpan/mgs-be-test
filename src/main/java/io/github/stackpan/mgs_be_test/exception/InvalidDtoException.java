@@ -14,6 +14,11 @@ public class InvalidDtoException extends RuntimeException {
         super("Invalid field.");
     }
 
+    public InvalidDtoException(String fieldName, String invalidDetails) {
+        super("Invalid field.");
+        putDetail(fieldName, invalidDetails);
+    }
+
     public void putDetail(String fieldName, String invalidDetails) {
         details.put(fieldName, new String[] {invalidDetails});
     }

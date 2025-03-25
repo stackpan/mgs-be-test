@@ -2,12 +2,14 @@ package io.github.stackpan.mgs_be_test.service.impl;
 
 import io.github.stackpan.mgs_be_test.entity.User;
 import io.github.stackpan.mgs_be_test.exception.InvalidDtoException;
+import io.github.stackpan.mgs_be_test.model.dto.UpdatePasswordDto;
 import io.github.stackpan.mgs_be_test.model.dto.UserDto;
 import io.github.stackpan.mgs_be_test.repository.UserRepository;
 import io.github.stackpan.mgs_be_test.security.AuthToken;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import io.github.stackpan.mgs_be_test.model.dto.LoginDto;
@@ -28,6 +30,8 @@ public class AuthServiceImpl implements AuthService {
     private final AuthToken authToken;
 
     private final JwtTokenizer jwtTokenizer;
+
+    private final PasswordEncoder passwordEncoder;
 
     @Override
     public String login(LoginDto data) {
@@ -63,5 +67,20 @@ public class AuthServiceImpl implements AuthService {
         currentUser.setLastName(data.getLastName().orElse(null));
 
         return userRepository.save(currentUser);
+    }
+
+    @Override
+    @Transactional
+    public void updatePassword(UpdatePasswordDto data) {
+        var currentUser = userRepository.findById(authToken.getCurrentSubject())
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Unauthorized"));
+
+        if (!passwordEncoder.matches(data.getCurrentPassword(), currentUser.getPassword())) {
+            throw new InvalidDtoException("currentPassword", "currentPassword is incorrect");
+        }
+
+        currentUser.setPassword(passwordEncoder.encode(data.getNewPassword()));
+
+        userRepository.save(currentUser);
     }
 }

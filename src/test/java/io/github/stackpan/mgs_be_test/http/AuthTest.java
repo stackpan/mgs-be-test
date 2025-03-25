@@ -207,4 +207,56 @@ public class AuthTest {
         }
     }
 
+    @Nested
+    class UpdatePassword {
+
+        @Test
+        void withValidCurrentPasswordShouldOk() throws Exception {
+            var payload = """
+                    {
+                        "currentPassword": "User123!",
+                        "newPassword": "User456!"
+                    }
+                    """;
+
+            var jwtMocks = jwt().jwt(jwt -> jwt
+                    .claim("sub", "84d591ca-c0e3-4716-8d5f-18d1c113cb51")
+                    .claim("scope", "ROLE_USER")
+            );
+
+            mockMvc.perform(post("/auth/me/update-password")
+                            .with(jwtMocks)
+                            .contentType(MediaType.APPLICATION_JSON_VALUE)
+                            .content(payload)
+                    )
+                    .andExpect(status().isOk());
+        }
+
+        @Test
+        void withWrongCurrentPasswordShouldOk() throws Exception {
+            var payload = """
+                    {
+                        "currentPassword": "User333!",
+                        "newPassword": "User456!"
+                    }
+                    """;
+
+            var jwtMocks = jwt().jwt(jwt -> jwt
+                    .claim("sub", "84d591ca-c0e3-4716-8d5f-18d1c113cb51")
+                    .claim("scope", "ROLE_USER")
+            );
+
+            mockMvc.perform(post("/auth/me/update-password")
+                            .with(jwtMocks)
+                            .contentType(MediaType.APPLICATION_JSON_VALUE)
+                            .content(payload)
+                    )
+                    .andExpect(status().isBadRequest())
+                    .andExpectAll(
+                            jsonPath("$.details.currentPassword").isArray()
+                    );
+        }
+
+    }
+
 }

@@ -3,9 +3,12 @@ package io.github.stackpan.mgs_be_test.controller;
 import java.io.FileNotFoundException;
 import java.util.Map;
 
+import io.github.stackpan.mgs_be_test.model.dto.UpdatePasswordDto;
+import io.github.stackpan.mgs_be_test.model.request.AuthMeUpdatePasswordRequest;
 import io.github.stackpan.mgs_be_test.model.request.AuthUpdateMeRequest;
 import io.github.stackpan.mgs_be_test.model.request.LoginRequest;
 import jakarta.validation.Valid;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import io.github.stackpan.mgs_be_test.model.dto.CreateUserDto;
@@ -71,5 +74,17 @@ public class AuthController {
         var user = authService.updateMe(dto);
 
         return UserDto.fromEntity(user);
+    }
+
+    @PostMapping("me/update-password")
+    public ResponseEntity<?> updatePassword(@RequestBody @Valid AuthMeUpdatePasswordRequest request) {
+        var dto = UpdatePasswordDto.builder()
+                .currentPassword(request.getCurrentPassword())
+                .newPassword(request.getNewPassword())
+                .build();
+
+        authService.updatePassword(dto);
+
+        return ResponseEntity.ok().build();
     }
 }
