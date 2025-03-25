@@ -2,6 +2,7 @@ package io.github.stackpan.mgs_be_test.controller;
 
 import java.util.Map;
 
+import io.github.stackpan.mgs_be_test.model.request.LoginRequest;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -43,8 +44,10 @@ public class AuthController {
     }
 
     @PostMapping("/login")
-    public Map<String, Object> login(@RequestBody LoginDto request) {
-        var token = authService.login(request);
+    public Map<String, Object> login(@RequestBody LoginRequest request) {
+        var dto = new LoginDto(request.username(), request.password());
+
+        var token = authService.login(dto);
 
         return Map.of("token", token);
     }
