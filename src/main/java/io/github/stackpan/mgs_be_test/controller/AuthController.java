@@ -10,6 +10,7 @@ import io.github.stackpan.mgs_be_test.model.request.AuthUpdateMeRequest;
 import io.github.stackpan.mgs_be_test.model.request.AuthLoginRequest;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import io.github.stackpan.mgs_be_test.model.request.AuthRegisterRequest;
@@ -61,6 +62,7 @@ public class AuthController {
     }
 
     @PutMapping("/me")
+    @PreAuthorize("hasAuthority('ROLE_ADMIN') or hasAuthority('PERMISSION_UPDATE_PROFILE')")
     public UserDto updateMe(@RequestBody @Valid AuthUpdateMeRequest request) {
         var dto = UserDto.builder()
                 .username(request.getUsername())
@@ -75,6 +77,7 @@ public class AuthController {
     }
 
     @PostMapping("me/update-password")
+    @PreAuthorize("hasAuthority('ROLE_ADMIN') or hasAuthority('PERMISSION_UPDATE_PASSWORD')")
     public ResponseEntity<?> updatePassword(@RequestBody @Valid AuthMeUpdatePasswordRequest request) {
         var dto = UpdatePasswordDto.builder()
                 .currentPassword(request.getCurrentPassword())
@@ -87,6 +90,7 @@ public class AuthController {
     }
 
     @PostMapping("me/uploads")
+    @PreAuthorize("hasAuthority('ROLE_ADMIN') or hasAuthority('UPLOAD_PHOTO_PROFILE')")
     public UserDto uploads(@RequestBody @Valid UpdateProfilePictureDto request) throws IOException {
         var user = authService.updateProfilePicture(request);
 

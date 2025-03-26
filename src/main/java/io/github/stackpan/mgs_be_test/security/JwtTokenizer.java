@@ -2,7 +2,6 @@ package io.github.stackpan.mgs_be_test.security;
 
 import java.time.Instant;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Authentication;
@@ -34,9 +33,9 @@ public class JwtTokenizer {
 
     public String generate(Authentication authenticated) {
         var now = Instant.now();
-        var scope = authenticated.getAuthorities().stream()
+        var scopes = authenticated.getAuthorities().stream()
                 .map(GrantedAuthority::getAuthority)
-                .collect(Collectors.joining(" "));
+                .toList();
 
         var claims = JwtClaimsSet.builder()
                 .issuer(jwtClaimsIssuer)
@@ -45,7 +44,7 @@ public class JwtTokenizer {
                 .issuedAt(now)
                 .notBefore(now)
                 .expiresAt(now.plusSeconds(jwtClaimsExpiration))
-                .claim("scope", scope)
+                .claim("scopes", scopes)
                 .build();
         
         return encoder.encode(JwtEncoderParameters.from(claims)).getTokenValue();
