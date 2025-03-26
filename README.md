@@ -94,4 +94,4 @@
 
 # API Docs
 
-You can refer to this [README](https://github.com/stackpan/mgs-be-test/tree/main/docs)
+You can refer to this [README](https://github.com/stackpan/mgs-be-test/blob/main/docs/api-schema.md)
