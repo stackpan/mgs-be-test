@@ -8,6 +8,8 @@ import java.util.UUID;
 
 public interface UserService {
 
+    User getById(UUID userId);
+
     User create(CreateUserDto data) throws FileNotFoundException;
 
     User updatePermissionsById(UUID userId, String[] permissions);

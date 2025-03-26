@@ -35,6 +35,12 @@ public class UserServiceImpl implements UserService, UserDetailsService {
     }
 
     @Override
+    public User getById(UUID userId) {
+        return userRepository.findById(userId)
+                .orElseThrow(() -> new UsernameNotFoundException("Could not find user with id: %s".formatted(userId.toString())));
+    }
+
+    @Override
     @Transactional
     public User create(CreateUserDto data) throws FileNotFoundException {
         var user = new User();

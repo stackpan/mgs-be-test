@@ -3,14 +3,19 @@ package io.github.stackpan.mgs_be_test.controller;
 import io.github.stackpan.mgs_be_test.exception.InvalidDtoException;
 import io.github.stackpan.mgs_be_test.exception.InvalidFileTypeException;
 import io.github.stackpan.mgs_be_test.exception.InvalidStorageUploadException;
+import org.springframework.beans.TypeMismatchException;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.context.request.WebRequest;
+import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
+import org.springframework.web.server.ResponseStatusException;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
 import java.util.*;
@@ -58,5 +63,18 @@ public class ErrorController extends ResponseEntityExceptionHandler {
 
         var response = new BaseErrorResponse("Invalid payload.", errorMap);
         return ResponseEntity.badRequest().body(response);
+    }
+
+    @Override
+    protected ResponseEntity<Object> handleTypeMismatch(TypeMismatchException ex, HttpHeaders headers, HttpStatusCode status, WebRequest request) {
+        if (ex instanceof MethodArgumentTypeMismatchException subEx) {
+            if (subEx.getParameter().getParameterType() == UUID.class) {
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                        .header("WWW-Authenticate", "Bearer")
+                        .build();
+            }
+        }
+
+        return super.handleTypeMismatch(ex, headers, status, request);
     }
 }

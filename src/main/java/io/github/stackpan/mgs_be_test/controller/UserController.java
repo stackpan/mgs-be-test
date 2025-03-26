@@ -16,6 +16,13 @@ public class UserController {
 
     private final UserService userService;
 
+    @GetMapping("/{userId}")
+    public UserDto getUser(@PathVariable UUID userId) {
+        var user = userService.getById(userId);
+
+        return UserDto.fromEntity(user);
+    }
+
     @PostMapping("/{userId}/permissions")
     public UserDto updatePermissions(@PathVariable UUID userId, @RequestBody @Valid UpdateUserPermissionDto request) {
         var user = userService.updatePermissionsById(userId, request.getPermissions().toArray(new String[0]));
