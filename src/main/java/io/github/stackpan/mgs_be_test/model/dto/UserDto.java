@@ -11,14 +11,22 @@ import lombok.Data;
 @Data
 @Builder
 public class UserDto {
-    UUID id;
-    String username;
-    String email;
-    String firstName;
-    Optional<String> lastName;
-    Optional<String> profilePicture;
-    String role;
-    Set<String> permissions;
+
+    private UUID id;
+
+    private String username;
+
+    private String email;
+
+    private String firstName;
+
+    private Optional<String> lastName;
+
+    private Optional<String> profilePicture;
+
+    private String role;
+
+    private Set<String> permissions;
 
     public static UserDto fromEntity(User user) {
         return UserDto.builder()

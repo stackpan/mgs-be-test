@@ -5,7 +5,7 @@ import jakarta.validation.constraints.Size;
 import lombok.Value;
 
 @Value
-public class LoginRequest {
+public class AuthLoginRequest {
 
     @NotNull
     @Size(max = 100)

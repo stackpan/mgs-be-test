@@ -48,6 +48,12 @@ public class AuthServiceImpl implements AuthService {
     }
 
     @Override
+    public User getMe() {
+        return userRepository.findById(authToken.getCurrentSubject())
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Unauthorized"));
+    }
+
+    @Override
     @Transactional
     public User updateMe(UserDto data) {
         var foundUsers = userRepository.findByUsernameOrEmail(data.getUsername(), data.getEmail());

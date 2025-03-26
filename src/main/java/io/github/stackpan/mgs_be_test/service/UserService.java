@@ -7,7 +7,5 @@ import java.io.FileNotFoundException;
 
 public interface UserService {
 
-    User getMe();
-
     User create(CreateUserDto data) throws FileNotFoundException;
 }

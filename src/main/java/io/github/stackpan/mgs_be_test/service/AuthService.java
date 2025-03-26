@@ -12,6 +12,8 @@ public interface AuthService {
     
     String login(LoginDto data);
 
+    User getMe();
+
     User updateMe(UserDto data);
 
     void updatePassword(UpdatePasswordDto data);

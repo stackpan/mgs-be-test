@@ -7,7 +7,7 @@ import java.util.Map;
 import io.github.stackpan.mgs_be_test.model.dto.*;
 import io.github.stackpan.mgs_be_test.model.request.AuthMeUpdatePasswordRequest;
 import io.github.stackpan.mgs_be_test.model.request.AuthUpdateMeRequest;
-import io.github.stackpan.mgs_be_test.model.request.LoginRequest;
+import io.github.stackpan.mgs_be_test.model.request.AuthLoginRequest;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -44,7 +44,7 @@ public class AuthController {
     }
 
     @PostMapping("/login")
-    public Map<String, Object> login(@RequestBody @Valid LoginRequest request) {
+    public Map<String, Object> login(@RequestBody @Valid AuthLoginRequest request) {
         var dto = LoginDto.builder()
                 .username(request.getUsername())
                 .password(request.getPassword())
@@ -57,7 +57,7 @@ public class AuthController {
 
     @GetMapping("/me")
     public UserDto me() {
-        return UserDto.fromEntity(userService.getMe());
+        return UserDto.fromEntity(authService.getMe());
     }
 
     @PutMapping("/me")
