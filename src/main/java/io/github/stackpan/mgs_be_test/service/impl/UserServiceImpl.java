@@ -15,6 +15,8 @@ import io.github.stackpan.mgs_be_test.service.UserService;
 import lombok.RequiredArgsConstructor;
 
 import java.io.FileNotFoundException;
+import java.util.Set;
+import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -46,6 +48,18 @@ public class UserServiceImpl implements UserService, UserDetailsService {
         if (data.getProfilePicture().isPresent()) {
             user.setProfilePicture(storageService.store(data.getProfilePicture().get(), "profilePicture", 1024000, "jpg", "png", "jpeg"));
         }
+
+        return userRepository.save(user);
+    }
+
+    @Override
+    @Transactional
+    public User updatePermissionsById(UUID userId, String... permissions) {
+        var user = userRepository.findById(userId)
+                .orElseThrow(() -> new UsernameNotFoundException("Could not find user with id: %s".formatted(userId.toString())));
+
+        user.getPermissions().clear();
+        user.getPermissions().addAll(Set.of(permissions));
 
         return userRepository.save(user);
     }
