@@ -76,7 +76,7 @@ public class AuthController {
         return UserDto.fromEntity(user);
     }
 
-    @PostMapping("me/update-password")
+    @PostMapping("/me/update-password")
     @PreAuthorize("hasAuthority('ROLE_ADMIN') or hasAuthority('PERMISSION_UPDATE_PASSWORD')")
     public ResponseEntity<?> updatePassword(@RequestBody @Valid AuthMeUpdatePasswordRequest request) {
         var dto = UpdatePasswordDto.builder()
@@ -89,8 +89,8 @@ public class AuthController {
         return ResponseEntity.ok().build();
     }
 
-    @PostMapping("me/uploads")
-    @PreAuthorize("hasAuthority('ROLE_ADMIN') or hasAuthority('UPLOAD_PHOTO_PROFILE')")
+    @PostMapping("/me/uploads")
+    @PreAuthorize("hasAuthority('ROLE_ADMIN') or hasAuthority('PERMISSION_UPLOAD_PROFILE_PICTURE')")
     public UserDto uploads(@RequestBody @Valid UpdateProfilePictureDto request) throws IOException {
         var user = authService.updateProfilePicture(request);
 
