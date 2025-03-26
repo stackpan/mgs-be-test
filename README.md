@@ -91,3 +91,7 @@
 ```shell
 ./mvnw spring-boot:run
 ```
+
+# API Docs
+
+You can refer to this [README](https://github.com/stackpan/mgs-be-test/tree/main/docs)
