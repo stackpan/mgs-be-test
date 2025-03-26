@@ -1,9 +1,10 @@
 package io.github.stackpan.mgs_be_test.controller;
 
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.util.Map;
 
-import io.github.stackpan.mgs_be_test.model.dto.UpdatePasswordDto;
+import io.github.stackpan.mgs_be_test.model.dto.*;
 import io.github.stackpan.mgs_be_test.model.request.AuthMeUpdatePasswordRequest;
 import io.github.stackpan.mgs_be_test.model.request.AuthUpdateMeRequest;
 import io.github.stackpan.mgs_be_test.model.request.LoginRequest;
@@ -11,9 +12,6 @@ import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import io.github.stackpan.mgs_be_test.model.dto.CreateUserDto;
-import io.github.stackpan.mgs_be_test.model.dto.LoginDto;
-import io.github.stackpan.mgs_be_test.model.dto.UserDto;
 import io.github.stackpan.mgs_be_test.model.request.AuthRegisterRequest;
 import io.github.stackpan.mgs_be_test.service.AuthService;
 import io.github.stackpan.mgs_be_test.service.UserService;
@@ -86,5 +84,12 @@ public class AuthController {
         authService.updatePassword(dto);
 
         return ResponseEntity.ok().build();
+    }
+
+    @PostMapping("me/uploads")
+    public UserDto uploads(@RequestBody @Valid UpdateProfilePictureDto request) throws IOException {
+        var user = authService.updateProfilePicture(request);
+
+        return UserDto.fromEntity(user);
     }
 }

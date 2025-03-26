@@ -1,13 +1,10 @@
 package io.github.stackpan.mgs_be_test.service.impl;
 
 import io.github.stackpan.mgs_be_test.exception.InvalidFileTypeException;
-import io.github.stackpan.mgs_be_test.exception.InvalidStorageUploadException;
 import io.github.stackpan.mgs_be_test.service.StorageService;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MaxUploadSizeExceededException;
 
@@ -15,7 +12,9 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Base64;
 import java.util.Set;
 import java.util.UUID;
@@ -67,6 +66,13 @@ public class LocalStorageService implements StorageService {
         }
 
         return filename;
+    }
+
+    @Override
+    public void delete(String filename) throws IOException {
+        var path = Paths.get(UPLOAD_DIR, filename);
+
+        Files.deleteIfExists(path);
     }
 
     private static String getExtension(String mimeType) {

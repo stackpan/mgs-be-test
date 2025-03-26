@@ -3,9 +3,11 @@ package io.github.stackpan.mgs_be_test.service.impl;
 import io.github.stackpan.mgs_be_test.entity.User;
 import io.github.stackpan.mgs_be_test.exception.InvalidDtoException;
 import io.github.stackpan.mgs_be_test.model.dto.UpdatePasswordDto;
+import io.github.stackpan.mgs_be_test.model.dto.UpdateProfilePictureDto;
 import io.github.stackpan.mgs_be_test.model.dto.UserDto;
 import io.github.stackpan.mgs_be_test.repository.UserRepository;
 import io.github.stackpan.mgs_be_test.security.AuthToken;
+import io.github.stackpan.mgs_be_test.service.StorageService;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -18,6 +20,8 @@ import io.github.stackpan.mgs_be_test.service.AuthService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
+
+import java.io.IOException;
 
 @Service
 @RequiredArgsConstructor
@@ -32,6 +36,8 @@ public class AuthServiceImpl implements AuthService {
     private final JwtTokenizer jwtTokenizer;
 
     private final PasswordEncoder passwordEncoder;
+
+    private final StorageService storageService;
 
     @Override
     public String login(LoginDto data) {
@@ -82,5 +88,20 @@ public class AuthServiceImpl implements AuthService {
         currentUser.setPassword(passwordEncoder.encode(data.getNewPassword()));
 
         userRepository.save(currentUser);
+    }
+
+    @Override
+    @Transactional
+    public User updateProfilePicture(UpdateProfilePictureDto data) throws IOException {
+        var currentUser = userRepository.findById(authToken.getCurrentSubject())
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Unauthorized"));
+
+        if (currentUser.getProfilePicture() != null) {
+            storageService.delete(currentUser.getProfilePicture());
+        }
+
+        currentUser.setProfilePicture(storageService.store(data.getProfilePicture(), "profilePicture", 1024000, "jpg", "png", "jpeg"));
+
+        return userRepository.save(currentUser);
     }
 }
